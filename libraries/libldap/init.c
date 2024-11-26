@@ -545,7 +545,7 @@ ldap_int_destroy_global_options(void)
 	}
 #endif
 #ifdef HAVE_TLS
-	ldap_int_tls_destroy( gopts );
+	ldap_int_tls_destroy_safe( gopts );
 #endif
 }
 

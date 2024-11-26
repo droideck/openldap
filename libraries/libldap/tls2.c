@@ -97,10 +97,14 @@ tls_ctx_ref( tls_ctx *ctx )
 static ldap_pvt_thread_mutex_t tls_def_ctx_mutex;
 #endif
 
-void
-ldap_int_tls_destroy( struct ldapoptions *lo )
-{
-	if ( lo->ldo_tls_ctx ) {
+/*
+ * Implementation function that handles all cleanup.
+ * skip_ctx_cleanup: 1 when called from destructor, 0 for normal operation
+ */
+static void
+ldap_int_tls_destroy_impl( struct ldapoptions *lo, int skip_ctx_cleanup )
+ {
+	if ( lo->ldo_tls_ctx && !skip_ctx_cleanup ) {
 		ldap_pvt_tls_ctx_free( lo->ldo_tls_ctx );
 		lo->ldo_tls_ctx = NULL;
 	}
@@ -145,6 +149,19 @@ ldap_int_tls_destroy( struct ldapoptions *lo )
 		LDAP_FREE( lo->ldo_tls_pin.bv_val );
 	}
 	BER_BVZERO( &lo->ldo_tls_pin );
+}
+
+
+void
+ldap_int_tls_destroy( struct ldapoptions *lo )
+{
+	ldap_int_tls_destroy_impl(lo, 0);
+}
+
+/* Safe version for destructor use */
+void ldap_int_tls_destroy_safe( struct ldapoptions *lo )
+{
+	ldap_int_tls_destroy_impl(lo, 1);
 }
 
 /*

@@ -914,6 +914,7 @@ LDAP_F (int) ldap_int_tls_start LDAP_P(( LDAP *ld,
 	LDAPConn *conn, LDAPURLDesc *srv ));
 
 LDAP_F (void) ldap_int_tls_destroy LDAP_P(( struct ldapoptions *lo ));
+LDAP_F (void) ldap_int_tls_destroy_safe LDAP_P(( struct ldapoptions *lo ));
 
 /*
  *	in getvalues.c
